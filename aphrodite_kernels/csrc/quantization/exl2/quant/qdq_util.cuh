@@ -20,8 +20,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef _qdq_util_cuh
-#define _qdq_util_cuh
+#ifndef _exl2_qdq_util_cuh
+#define _exl2_qdq_util_cuh
+
+#include <cuda_fp16.h>
+
+#ifndef __hfma2
+#define __hfma2(a, b, c) __hadd2(__hmul2((a), (b)), (c))
+#endif
+
+#ifndef __hfma
+#define __hfma(a, b, c) __hadd(__hmul((a), (b)), (c))
+#endif
+
+#define APHRODITE_EXL2_HFMA2(a, b, c) __hfma2((a), (b), (c))
+
+#define APHRODITE_EXL2_HFMA(a, b, c) __hfma((a), (b), (c))
 
 namespace aphrodite {
 namespace exl2 {

@@ -4,11 +4,19 @@ from aphrodite.platforms import current_platform
 
 logger = init_logger(__name__)
 
+flash_attn_varlen_func = None
+get_scheduler_metadata = None
+
 if current_platform.is_cuda():
     from aphrodite import _custom_ops as ops
 
     reshape_and_cache_flash = ops.reshape_and_cache_flash
-    from aphrodite_kernels.aphrodite_flash_attn import flash_attn_varlen_func, get_scheduler_metadata
+    try:
+        from aphrodite_kernels.aphrodite_flash_attn import flash_attn_varlen_func, get_scheduler_metadata
+    except ModuleNotFoundError:
+        logger.warning(
+            "aphrodite_kernels.aphrodite_flash_attn is unavailable; disabling flash-attn backend."
+        )
 elif current_platform.is_xpu():
     from aphrodite._ipex_ops import ipex_ops as ops
 
@@ -104,4 +112,4 @@ def flash_attn_supports_mla():
 
 
 def is_flash_attn_varlen_func_available() -> bool:
-    return current_platform.is_cuda() or current_platform.is_xpu()
+    return flash_attn_varlen_func is not None

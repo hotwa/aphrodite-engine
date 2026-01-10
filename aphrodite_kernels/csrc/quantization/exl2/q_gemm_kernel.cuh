@@ -21,6 +21,7 @@
  * SOFTWARE.
  */
 #include "compat.cuh"
+#include "quant/qdq_util.cuh"
 
 namespace aphrodite {
 namespace exl2 {
@@ -36,8 +37,8 @@ __forceinline__ __device__ half2 dot22_8(half2 (&dq)[4], const half* a_ptr,
   half2 result = {};
   const half2* a2_ptr = (const half2*)a_ptr;
 #pragma unroll
-  for (int i = 0; i < 4; i++) result = __hfma2(dq[i], *a2_ptr++, result);
-  return __hfma2(result, __halves2half2(qs_h, qs_h), g_result);
+  for (int i = 0; i < 4; i++) result = APHRODITE_EXL2_HFMA2(dq[i], *a2_ptr++, result);
+  return APHRODITE_EXL2_HFMA2(result, __halves2half2(qs_h, qs_h), g_result);
 }
 
 __forceinline__ __device__ half2 dot22_16(half2 (&dq)[8], const half* a_ptr,
@@ -46,8 +47,8 @@ __forceinline__ __device__ half2 dot22_16(half2 (&dq)[8], const half* a_ptr,
   half2 result = {};
   const half2* a2_ptr = (const half2*)a_ptr;
 #pragma unroll
-  for (int i = 0; i < 8; i++) result = __hfma2(dq[i], *a2_ptr++, result);
-  return __hfma2(result, __halves2half2(qs_h, qs_h), g_result);
+  for (int i = 0; i < 8; i++) result = APHRODITE_EXL2_HFMA2(dq[i], *a2_ptr++, result);
+  return APHRODITE_EXL2_HFMA2(result, __halves2half2(qs_h, qs_h), g_result);
 }
 
 __forceinline__ __device__ half2 dot22_32(half2 (&dq)[16], const half* a_ptr,
@@ -56,8 +57,8 @@ __forceinline__ __device__ half2 dot22_32(half2 (&dq)[16], const half* a_ptr,
   half2 result = {};
   const half2* a2_ptr = (const half2*)a_ptr;
 #pragma unroll
-  for (int i = 0; i < 16; i += 1) result = __hfma2(dq[i], *a2_ptr++, result);
-  return __hfma2(result, __halves2half2(qs_h, qs_h), g_result);
+  for (int i = 0; i < 16; i += 1) result = APHRODITE_EXL2_HFMA2(dq[i], *a2_ptr++, result);
+  return APHRODITE_EXL2_HFMA2(result, __halves2half2(qs_h, qs_h), g_result);
 }
 
 __forceinline__ __device__ float dot22_8_f(half2 (&dq)[4], const half* a_ptr,
@@ -66,7 +67,7 @@ __forceinline__ __device__ float dot22_8_f(half2 (&dq)[4], const half* a_ptr,
   half2 result = {};
   const half2* a2_ptr = (const half2*)a_ptr;
 #pragma unroll
-  for (int i = 0; i < 4; i++) result = __hfma2(dq[i], *a2_ptr++, result);
+  for (int i = 0; i < 4; i++) result = APHRODITE_EXL2_HFMA2(dq[i], *a2_ptr++, result);
   float result_f =
       __half2float(__low2half(result)) + __half2float(__high2half(result));
   return fma(result_f, qs_f, g_result);
@@ -78,7 +79,7 @@ __forceinline__ __device__ float dot22_16_f(half2 (&dq)[8], const half* a_ptr,
   half2 result = {};
   const half2* a2_ptr = (const half2*)a_ptr;
 #pragma unroll
-  for (int i = 0; i < 8; i++) result = __hfma2(dq[i], *a2_ptr++, result);
+  for (int i = 0; i < 8; i++) result = APHRODITE_EXL2_HFMA2(dq[i], *a2_ptr++, result);
   float result_f =
       __half2float(__low2half(result)) + __half2float(__high2half(result));
   return fma(result_f, qs_f, g_result);
@@ -90,7 +91,7 @@ __forceinline__ __device__ float dot22_32_f(half2 (&dq)[16], const half* a_ptr,
   half2 result = {};
   const half2* a2_ptr = (const half2*)a_ptr;
 #pragma unroll
-  for (int i = 0; i < 16; i += 1) result = __hfma2(dq[i], *a2_ptr++, result);
+  for (int i = 0; i < 16; i += 1) result = APHRODITE_EXL2_HFMA2(dq[i], *a2_ptr++, result);
   float result_f =
       __half2float(__low2half(result)) + __half2float(__high2half(result));
   return fma(result_f, qs_f, g_result);
@@ -125,9 +126,9 @@ __forceinline__ __device__ half dot22_16_h(half2 (&dq)[8], const half* a_ptr,
   half2 result = {};
   const half2* a2_ptr = (const half2*)a_ptr;
 #pragma unroll
-  for (int i = 0; i < 8; i++) result = __hfma2(dq[i], *a2_ptr++, result);
+  for (int i = 0; i < 8; i++) result = APHRODITE_EXL2_HFMA2(dq[i], *a2_ptr++, result);
   half result_h = __hadd(__low2half(result), __high2half(result));
-  return __hfma(result_h, qs_h, g_result);
+  return APHRODITE_EXL2_HFMA(result_h, qs_h, g_result);
 }
 
 __forceinline__ __device__ half dot22_32_h(half2 (&dq)[16], const half* a_ptr,
@@ -136,9 +137,9 @@ __forceinline__ __device__ half dot22_32_h(half2 (&dq)[16], const half* a_ptr,
   half2 result = {};
   const half2* a2_ptr = (const half2*)a_ptr;
 #pragma unroll
-  for (int i = 0; i < 16; i += 1) result = __hfma2(dq[i], *a2_ptr++, result);
+  for (int i = 0; i < 16; i += 1) result = APHRODITE_EXL2_HFMA2(dq[i], *a2_ptr++, result);
   half result_h = __hadd(__low2half(result), __high2half(result));
-  return __hfma(result_h, qs_h, g_result);
+  return APHRODITE_EXL2_HFMA(result_h, qs_h, g_result);
 }
 
 typedef void (*fp_gemm_half_q_half_kernel)(
@@ -537,8 +538,8 @@ __global__ void gemm_half_q_half_kernel(
     half2 result01 = __halves2half2(block_c[m][0], block_c[m][1]);
     half2 result23 = __halves2half2(block_c[m][2], block_c[m][3]);
 
-    atomicAdd(out, result01);
-    atomicAdd(out + 1, result23);
+    atomicAdd_exl2(out, result01);
+    atomicAdd_exl2(out + 1, result23);
     //        *out = result01;
     //        *(out + 1) = result23;
   }

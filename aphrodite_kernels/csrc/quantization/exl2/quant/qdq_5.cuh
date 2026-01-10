@@ -189,19 +189,19 @@ __forceinline__ __device__ void dequant_5bit_32(
   half2_uint32 q15((qa | qb | qc | qd | qe) | c0);
 
   dq[0] = __hadd2(q0.as_half2, z1);
-  dq[1] = __hfma2(q1.as_half2, y32, z32);
+  dq[1] = APHRODITE_EXL2_HFMA2(q1.as_half2, y32, z32);
   dq[2] = __hadd2(q2.as_half2, z1);
   dq[3] = __hadd2(q3.as_half2, z1);
-  dq[4] = __hfma2(q4.as_half2, y32, z32);
+  dq[4] = APHRODITE_EXL2_HFMA2(q4.as_half2, y32, z32);
   dq[5] = __hadd2(q5.as_half2, z1);
   dq[6] = __hadd2(q6.as_half2, z1);
-  dq[7] = __hfma2(q7.as_half2, y32, z32);
+  dq[7] = APHRODITE_EXL2_HFMA2(q7.as_half2, y32, z32);
   dq[8] = __hadd2(q8.as_half2, z1);
   dq[9] = __hadd2(q9.as_half2, z1);
-  dq[10] = __hfma2(q10.as_half2, y32, z32);
+  dq[10] = APHRODITE_EXL2_HFMA2(q10.as_half2, y32, z32);
   dq[11] = __hadd2(q11.as_half2, z1);
   dq[12] = __hadd2(q12.as_half2, z1);
-  dq[13] = __hfma2(q13.as_half2, y32, z32);
+  dq[13] = APHRODITE_EXL2_HFMA2(q13.as_half2, y32, z32);
   dq[14] = __hadd2(q14.as_half2, z1);
   dq[15] = __hadd2(q15.as_half2, z1);
 }

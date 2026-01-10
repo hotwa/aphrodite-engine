@@ -65,9 +65,9 @@ __forceinline__ __device__ void dequant_4bit_8(const uint32_t q_0,
   half2_uint32 q3((qa & 0x00f000f0) | c0);  // half2(q[ 6], q[ 7]) * 16 + 1024
 
   dq[0] = __hadd2(q0.as_half2, z1);
-  dq[1] = __hfma2(q1.as_half2, y16, z16);
+  dq[1] = APHRODITE_EXL2_HFMA2(q1.as_half2, y16, z16);
   dq[2] = __hadd2(q2.as_half2, z1);
-  dq[3] = __hfma2(q3.as_half2, y16, z16);
+  dq[3] = APHRODITE_EXL2_HFMA2(q3.as_half2, y16, z16);
 }
 
 __forceinline__ __device__ void dequant_4bit_8_prep_zero_scale(
@@ -123,18 +123,18 @@ __forceinline__ __device__ void dequant_4bit_8_gptq(const uint32_t q_0,
                   c0);  // half2( q[6] * 16 + 1024, q[7] * 16 + 1024 )
 
   if (scaled) {
-    dq[0] = __hfma2(q0.as_half2, y1y16[0],
+    dq[0] = APHRODITE_EXL2_HFMA2(q0.as_half2, y1y16[0],
                     z1z16[0]);  // half2( q[0] * s - z * s, q[1] * s - z * s)
-    dq[1] = __hfma2(q1.as_half2, y1y16[1],
+    dq[1] = APHRODITE_EXL2_HFMA2(q1.as_half2, y1y16[1],
                     z1z16[1]);  // half2( q[2] * s - z * s, q[3] * s - z * s)
-    dq[2] = __hfma2(q2.as_half2, y1y16[0], z1z16[0]);
-    dq[3] = __hfma2(q3.as_half2, y1y16[1], z1z16[1]);
+    dq[2] = APHRODITE_EXL2_HFMA2(q2.as_half2, y1y16[0], z1z16[0]);
+    dq[3] = APHRODITE_EXL2_HFMA2(q3.as_half2, y1y16[1], z1z16[1]);
   } else {
     dq[0] = __hadd2(q0.as_half2, z1z16[0]);  // half2( q[0] - z, q[1] - z )
-    dq[1] = __hfma2(q1.as_half2, y1y16[1],
+    dq[1] = APHRODITE_EXL2_HFMA2(q1.as_half2, y1y16[1],
                     z1z16[1]);               // half2( q[2] - z, q[3] - z )
     dq[2] = __hadd2(q2.as_half2, z1z16[0]);  // half2( q[4] - z, q[5] - z )
-    dq[3] = __hfma2(q3.as_half2, y1y16[1],
+    dq[3] = APHRODITE_EXL2_HFMA2(q3.as_half2, y1y16[1],
                     z1z16[1]);  // half2( q[6] - z, q[7] - z )
   }
 }

@@ -107,7 +107,8 @@ ENV VIRTUAL_ENV="/opt/venv"
 
 # This timeout (in seconds) is necessary when installing some dependencies via uv since it's likely to time out
 # Reference: https://github.com/astral-sh/uv/pull/1694
-ENV UV_HTTP_TIMEOUT=500
+ENV UV_HTTP_TIMEOUT=1200
+ENV UV_CONCURRENT_DOWNLOADS=4
 ENV UV_INDEX_STRATEGY="unsafe-best-match"
 # Use copy mode to avoid hardlink failures with Docker cache mounts
 ENV UV_LINK_MODE=copy
@@ -159,7 +160,8 @@ COPY aphrodite_kernels/requirements.txt aphrodite_kernels/requirements.txt
 
 # This timeout (in seconds) is necessary when installing some dependencies via uv since it's likely to time out
 # Reference: https://github.com/astral-sh/uv/pull/1694
-ENV UV_HTTP_TIMEOUT=500
+ENV UV_HTTP_TIMEOUT=1200
+ENV UV_CONCURRENT_DOWNLOADS=4
 ENV UV_INDEX_STRATEGY="unsafe-best-match"
 # Use copy mode to avoid hardlink failures with Docker cache mounts
 ENV UV_LINK_MODE=copy
@@ -180,6 +182,7 @@ ENV NVCC_THREADS=$nvcc_threads
 
 ARG aphrodite_target_device="cuda"
 ENV APHRODITE_TARGET_DEVICE=${aphrodite_target_device}
+ENV APHRODITE_DISABLE_FLASH_ATTN_COMPILE=1
 ENV CCACHE_DIR=/root/.cache/ccache
 
 RUN --mount=type=cache,target=/root/.cache/ccache \
@@ -211,7 +214,8 @@ COPY requirements/build.txt requirements/build.txt
 
 # This timeout (in seconds) is necessary when installing some dependencies via uv since it's likely to time out
 # Reference: https://github.com/astral-sh/uv/pull/1694
-ENV UV_HTTP_TIMEOUT=500
+ENV UV_HTTP_TIMEOUT=1200
+ENV UV_CONCURRENT_DOWNLOADS=4
 ENV UV_INDEX_STRATEGY="unsafe-best-match"
 # Use copy mode to avoid hardlink failures with Docker cache mounts
 ENV UV_LINK_MODE=copy
@@ -280,7 +284,8 @@ ARG PYTORCH_CUDA_INDEX_BASE_URL
 
 # This timeout (in seconds) is necessary when installing some dependencies via uv since it's likely to time out
 # Reference: https://github.com/astral-sh/uv/pull/1694
-ENV UV_HTTP_TIMEOUT=500
+ENV UV_HTTP_TIMEOUT=1200
+ENV UV_CONCURRENT_DOWNLOADS=4
 ENV UV_INDEX_STRATEGY="unsafe-best-match"
 # Use copy mode to avoid hardlink failures with Docker cache mounts
 ENV UV_LINK_MODE=copy
@@ -358,7 +363,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # This timeout (in seconds) is necessary when installing some dependencies via uv since it's likely to time out
 # Reference: https://github.com/astral-sh/uv/pull/1694
-ENV UV_HTTP_TIMEOUT=500
+ENV UV_HTTP_TIMEOUT=1200
+ENV UV_CONCURRENT_DOWNLOADS=4
 ENV UV_INDEX_STRATEGY="unsafe-best-match"
 # Use copy mode to avoid hardlink failures with Docker cache mounts
 ENV UV_LINK_MODE=copy
@@ -476,7 +482,8 @@ ARG PYTORCH_CUDA_INDEX_BASE_URL
 
 # This timeout (in seconds) is necessary when installing some dependencies via uv since it's likely to time out
 # Reference: https://github.com/astral-sh/uv/pull/1694
-ENV UV_HTTP_TIMEOUT=500
+ENV UV_HTTP_TIMEOUT=1200
+ENV UV_CONCURRENT_DOWNLOADS=4
 ENV UV_INDEX_STRATEGY="unsafe-best-match"
 # Use copy mode to avoid hardlink failures with Docker cache mounts
 ENV UV_LINK_MODE=copy
@@ -519,7 +526,8 @@ ARG PIP_EXTRA_INDEX_URL UV_EXTRA_INDEX_URL
 
 # This timeout (in seconds) is necessary when installing some dependencies via uv since it's likely to time out
 # Reference: https://github.com/astral-sh/uv/pull/1694
-ENV UV_HTTP_TIMEOUT=500
+ENV UV_HTTP_TIMEOUT=1200
+ENV UV_CONCURRENT_DOWNLOADS=4
 
 COPY requirements/kv_connectors.txt requirements/kv_connectors.txt
 

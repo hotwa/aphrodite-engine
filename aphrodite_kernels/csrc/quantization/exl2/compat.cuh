@@ -20,8 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef _compat_cuh
-  #define _compat_cuh
+#ifndef _exl2_compat_cuh
+#define _exl2_compat_cuh
+
+#include <cuda_runtime.h>
+#include <cuda_fp16.h>
 
 namespace aphrodite {
 namespace exl2 {
@@ -62,23 +65,42 @@ __device__ __forceinline__ void atomicAdd_half2(half2* address, half2 val) {
 
 //
 
-  #if defined(__CUDA_ARCH__) || defined(USE_ROCM)
-    #if __CUDA_ARCH__ < 700 || defined(USE_ROCM)
+#if defined(__CUDA_ARCH__) || defined(USE_ROCM)
+  #if __CUDA_ARCH__ < 700 || defined(USE_ROCM)
 
 __device__ __forceinline__ void atomicAdd(half* address, half val) {
   atomicAdd_half(address, val);
 }
 
-      #if __CUDA_ARCH__ < 600 || defined(USE_ROCM)
+    #if __CUDA_ARCH__ < 600 || defined(USE_ROCM)
 __device__ __forceinline__ void atomicAdd(half2* address, half2 val) {
   atomicAdd_half2(address, val);
 }
-      #endif
-
     #endif
   #endif
-
 #endif
+
+__device__ __forceinline__ void atomicAdd_exl2(half* address, half val) {
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ < 700)
+  atomicAdd_half(address, val);
+#elif defined(USE_ROCM)
+  atomicAdd_half(address, val);
+#else
+  ::atomicAdd(address, val);
+#endif
+}
+
+__device__ __forceinline__ void atomicAdd_exl2(half2* address, half2 val) {
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ < 600)
+  atomicAdd_half2(address, val);
+#elif defined(USE_ROCM)
+  atomicAdd_half2(address, val);
+#else
+  ::atomicAdd(address, val);
+#endif
+}
 
 }  // namespace exl2
 }  // namespace aphrodite
+
+#endif

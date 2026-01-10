@@ -2,12 +2,20 @@ from typing import Any, Optional
 
 import torch
 
+try:
+    from torch._dynamo import disable as dynamo_disable
+except Exception:  # pragma: no cover - torch._dynamo may be unavailable
+    def dynamo_disable(fn):
+        return fn
+
 from aphrodite import _custom_ops as ops
 from aphrodite.modeling.layers.linear import LinearBase, LinearMethodBase
+from aphrodite.modeling.layers.vocab_parallel_embedding import ParallelLMHead
 from aphrodite.modeling.utils import set_weight_attrs
 from aphrodite.quantization.base_config import QuantizationConfig
 
 
+@dynamo_disable
 def make_group_map(q_groups, num_qrows):
     gr = q_groups.tolist()
     group_map = []
@@ -55,6 +63,8 @@ class Exl2Config(QuantizationConfig):
 
     def get_quant_method(self, layer: torch.nn.Module, prefix: str) -> Optional["Exl2LinearMethod"]:
         if isinstance(layer, LinearBase):
+            return Exl2LinearMethod(self)
+        if isinstance(layer, ParallelLMHead):
             return Exl2LinearMethod(self)
         return None
 
@@ -113,16 +123,23 @@ class Exl2LinearMethod(LinearMethodBase):
         reshaped_x = x.reshape(-1, x.shape[-1])
 
         if layer.exllama_state == 0:
+            if layer.q_weight.device != x.device:
+                for name in ("q_weight", "q_scale", "q_scale_max", "q_groups", "q_invperm"):
+                    param = getattr(layer, name)
+                    if isinstance(param, torch.nn.Parameter):
+                        param.data = param.data.to(x.device)
+                    else:
+                        setattr(layer, name, param.to(x.device))
             layer.q_scale_max /= 256
-            layer.q_invperm = layer.q_invperm.short()
+            q_invperm = layer.q_invperm.short()
             if not hasattr(layer, "q_perm"):
-                layer.q_perm = torch.argsort(layer.q_invperm).to(torch.short)
+                layer.q_perm = torch.argsort(q_invperm).to(torch.short)
             if not hasattr(layer, "q_group_map"):
                 layer.q_group_map = make_group_map(layer.q_groups, layer.q_weight.shape[0])
             layer.q_matrix = ops.exl2_make_q_matrix(
                 layer.q_weight,
                 layer.q_perm,
-                layer.q_invperm,
+                q_invperm,
                 layer.q_scale,
                 layer.q_scale_max,
                 layer.q_groups,

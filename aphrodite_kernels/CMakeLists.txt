@@ -860,6 +860,11 @@ set(APHRODITE_EXT_SRC
     message(STATUS "Building hadacore")
   endif()
 
+  # EXL2
+  list(APPEND APHRODITE_EXT_SRC
+    "csrc/quantization/exl2/q_gemm_exl2.cu"
+    "csrc/quantization/exl2/q_matrix.cu")
+
 # if CUDA endif
 endif()
 

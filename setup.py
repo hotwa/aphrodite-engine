@@ -11,7 +11,7 @@ from shutil import which
 
 import torch
 from packaging.version import Version, parse
-from setuptools import Extension, setup
+from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext
 from setuptools_scm import get_version
 from torch.utils.cpp_extension import CUDA_HOME, ROCM_HOME
@@ -595,5 +595,11 @@ setup(
     },
     ext_modules=ext_modules,
     cmdclass={},
+    packages=find_packages(include=["aphrodite*"]),
     package_data=package_data,
+    entry_points={
+        "console_scripts": [
+            "aphrodite=aphrodite.endpoints.cli.main:main",
+        ],
+    },
 )

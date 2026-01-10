@@ -896,6 +896,9 @@ def get_model_config_yaml(model_name_or_path: str, cache_dir: str | None = None)
 def default_weight_loader(param: torch.Tensor, loaded_weight: torch.Tensor) -> None:
     """Default weight loader."""
     try:
+        if isinstance(param, torch.nn.parameter.UninitializedParameter):
+            # Materialize lazy params with the incoming dtype/device.
+            param.materialize(loaded_weight.size(), device=loaded_weight.device, dtype=loaded_weight.dtype)
         if param.numel() == 1 and loaded_weight.numel() == 1:
             # Sometimes scalar values aren't considered tensors with shapes
             # so if both param and loaded_weight are a scalar,

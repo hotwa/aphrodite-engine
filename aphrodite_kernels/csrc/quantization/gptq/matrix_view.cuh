@@ -3,8 +3,8 @@ Adapted from https://github.com/turboderp/exllamav2 and
 https://github.com/turboderp/exllama
 */
 
-#ifndef _matrix_view_cuh
-#define _matrix_view_cuh
+#ifndef _gptq_matrix_view_cuh
+#define _gptq_matrix_view_cuh
 
 #include <cuda_runtime.h>
 #include <cuda_fp16.h>

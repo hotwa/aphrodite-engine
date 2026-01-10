@@ -109,7 +109,13 @@ class DefaultModelLoader(BaseModelLoader):
             allow_patterns += ["*.pt"]
 
         if allow_patterns_overrides is not None:
-            allow_patterns = allow_patterns_overrides
+            if len(allow_patterns_overrides) == 0:
+                logger.warning(
+                    "allow_patterns_overrides is empty for %s; using default patterns.",
+                    model_name_or_path,
+                )
+            else:
+                allow_patterns = allow_patterns_overrides
 
         if not is_local:
             hf_folder = download_weights_from_hf(
@@ -146,6 +152,24 @@ class DefaultModelLoader(BaseModelLoader):
             hf_weights_files = filter_duplicate_safetensors_files(hf_weights_files, hf_folder, index_file)
         else:
             hf_weights_files = filter_files_not_needed_for_inference(hf_weights_files)
+
+        if len(hf_weights_files) == 0 and is_local:
+            # Fallback for local layouts that keep weights in nested folders.
+            recursive_patterns = ["**/*.safetensors"]
+            if fall_back_to_pt:
+                recursive_patterns.append("**/*.pt")
+            for pattern in recursive_patterns:
+                hf_weights_files = glob.glob(os.path.join(hf_folder, pattern), recursive=True)
+                if hf_weights_files:
+                    if pattern.endswith(".safetensors"):
+                        use_safetensors = True
+                    logger.warning(
+                        "No weights found in %s with patterns %s; using recursive pattern %s.",
+                        hf_folder,
+                        allow_patterns,
+                        pattern,
+                    )
+                    break
 
         if len(hf_weights_files) == 0:
             raise RuntimeError(f"Cannot find any model weights with `{model_name_or_path}`")

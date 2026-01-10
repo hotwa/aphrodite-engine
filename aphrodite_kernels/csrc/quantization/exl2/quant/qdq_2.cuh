@@ -76,13 +76,13 @@ __forceinline__ __device__ void dequant_2bit_16(const uint32_t q_0,
   half2_uint32 q7((qa & 0x00c000c0) | c0);  // half2(q[14], q[15]) * 64 + 1024
 
   dq[0] = __hadd2(q0.as_half2, z1);
-  dq[1] = __hfma2(q1.as_half2, y4, z4);
-  dq[2] = __hfma2(q2.as_half2, y16, z16);
-  dq[3] = __hfma2(q3.as_half2, y64, z64);
+  dq[1] = APHRODITE_EXL2_HFMA2(q1.as_half2, y4, z4);
+  dq[2] = APHRODITE_EXL2_HFMA2(q2.as_half2, y16, z16);
+  dq[3] = APHRODITE_EXL2_HFMA2(q3.as_half2, y64, z64);
   dq[4] = __hadd2(q4.as_half2, z1);
-  dq[5] = __hfma2(q5.as_half2, y4, z4);
-  dq[6] = __hfma2(q6.as_half2, y16, z16);
-  dq[7] = __hfma2(q7.as_half2, y64, z64);
+  dq[5] = APHRODITE_EXL2_HFMA2(q5.as_half2, y4, z4);
+  dq[6] = APHRODITE_EXL2_HFMA2(q6.as_half2, y16, z16);
+  dq[7] = APHRODITE_EXL2_HFMA2(q7.as_half2, y64, z64);
 }
 
 }  // namespace exl2

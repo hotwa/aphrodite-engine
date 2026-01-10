@@ -2,8 +2,8 @@
 Copied from https://github.com/turboderp/exllamav2
 */
 
-#ifndef _compat_cuh
-#define _compat_cuh
+#ifndef _gptq_compat_cuh
+#define _gptq_compat_cuh
 
 namespace aphrodite {
 namespace gptq {

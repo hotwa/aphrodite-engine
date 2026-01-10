@@ -355,6 +355,8 @@ class CudaPlatformBase(Platform):
 
         from aphrodite.attention.selector import is_attn_backend_supported
 
+        is_default_backend_supported = is_attn_backend_supported(TRITON_ATTN, head_size, dtype)
+
         # Default backends for V1 engine
         # Prefer FlashInfer for Blackwell GPUs if installed
         if cls.is_device_capability(100):
@@ -388,6 +390,9 @@ class CudaPlatformBase(Platform):
             ):
                 logger.info_once("Using Flash Attention backend.", scope="global")
                 return FLASH_ATTN_V1
+        elif is_default_backend_supported:
+            logger.info_once("Using Triton backend.", scope="global")
+            return TRITON_ATTN
 
         assert not is_default_backend_supported
 

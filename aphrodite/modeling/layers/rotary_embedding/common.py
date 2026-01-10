@@ -9,8 +9,13 @@ from aphrodite.logger import init_logger
 from aphrodite.platforms import current_platform
 from aphrodite.utils.torch_utils import direct_register_custom_op
 
+apply_rotary_emb = None
 if current_platform.is_cuda():
-    from aphrodite_kernels.aphrodite_flash_attn.layers.rotary import apply_rotary_emb
+    try:
+        from aphrodite_kernels.aphrodite_flash_attn.layers.rotary import apply_rotary_emb as _apply_rotary_emb
+    except ModuleNotFoundError:
+        _apply_rotary_emb = None
+    apply_rotary_emb = _apply_rotary_emb
 
 logger = init_logger(__name__)
 
@@ -61,18 +66,21 @@ def apply_rotary_emb_dispatch(
         is_neox_style: Whether to use the Neox-style or GPT-J-style rotary
             positional embeddings.
     """
-    if current_platform.is_cuda():
+    if current_platform.is_cuda() and apply_rotary_emb is not None:
         return apply_rotary_emb(x.unsqueeze(0), cos, sin, not is_neox_style).squeeze(0)
-    else:
-        return apply_rotary_emb_torch(x, cos, sin, is_neox_style)
+    return apply_rotary_emb_torch(x, cos, sin, is_neox_style)
 
 
 @cache
 def dispatch_rotary_emb_function(
     default: Callable[..., torch.Tensor] | None = None,
 ) -> Callable[..., torch.Tensor]:
-    if current_platform.is_cuda():
+    if current_platform.is_cuda() and apply_rotary_emb is not None:
         return apply_rotary_emb
+    if current_platform.is_cuda() and apply_rotary_emb is None:
+        logger.warning(
+            "aphrodite_kernels.aphrodite_flash_attn is unavailable; falling back to PyTorch rotary embeddings."
+        )
 
     # if torch compile is not enabled
     # use rotary embedding function from flash_attn package

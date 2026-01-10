@@ -2,8 +2,8 @@
 Copied from https://github.com/turboderp/exllamav2
 */
 
-#ifndef _qdq_util_cuh
-#define _qdq_util_cuh
+#ifndef _gptq_qdq_util_cuh
+#define _gptq_qdq_util_cuh
 
 namespace aphrodite {
 namespace gptq {

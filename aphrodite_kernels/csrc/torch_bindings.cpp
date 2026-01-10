@@ -299,6 +299,16 @@ TORCH_LIBRARY_EXPAND(TORCH_EXTENSION_NAME, ops) {
       {stride_tag});
   ops.impl("awq_dequantize", torch::kCUDA, &awq_dequantize);
 
+  // EXL2
+  ops.def("exl2_gemm(Tensor a, int b) -> Tensor");
+  ops.impl("exl2_gemm", torch::kCUDA, &exl2_gemm);
+
+  ops.def(
+      "exl2_make_q_matrix(Tensor q_weight, Tensor q_perm, Tensor q_invperm, "
+      "Tensor q_scale, Tensor q_scale_max, Tensor q_groups, Tensor q_group_map) "
+      "-> int");
+  ops.impl("exl2_make_q_matrix", torch::kCUDA, &exl2_make_q_matrix);
+
   // Quantized GEMM for VPTQ.
   ops.def(
       "vptq_gemm(Tensor input,"

@@ -20,8 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef _matrix_view_cuh
-#define _matrix_view_cuh
+#ifndef _exl2_matrix_view_cuh
+#define _exl2_matrix_view_cuh
 
 #include <cuda_runtime.h>
 #include <cuda_fp16.h>
