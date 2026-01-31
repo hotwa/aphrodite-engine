@@ -1,3 +1,11 @@
 conda/
 build/
 venv/
+dist/
+*.egg-info
+aphrodite_kernels/dist
+aphrodite_kernels/build
+__pycache__/
+.git/
+.vscode/
+.idea/

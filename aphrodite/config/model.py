@@ -974,6 +974,21 @@ class ModelConfig:
                 elif quant_algo is not None:
                     raise ValueError(f"Unknown ModelOpt quant algo: {quant_algo}")
 
+        # Strip newer optional fields that older quantization parsers don't accept.
+        def _strip_unsupported_quant_keys(obj: Any) -> Any:
+            if isinstance(obj, dict):
+                obj.pop("scale_dtype", None)
+                obj.pop("zp_dtype", None)
+                for k, v in list(obj.items()):
+                    obj[k] = _strip_unsupported_quant_keys(v)
+                return obj
+            if isinstance(obj, list):
+                return [_strip_unsupported_quant_keys(i) for i in obj]
+            return obj
+
+        if isinstance(quant_cfg, dict):
+            quant_cfg = _strip_unsupported_quant_keys(quant_cfg)
+
         return quant_cfg
 
     def _verify_quantization(self) -> None:

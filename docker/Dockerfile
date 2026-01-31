@@ -187,7 +187,6 @@ ENV CCACHE_DIR=/root/.cache/ccache
 
 RUN --mount=type=cache,target=/root/.cache/ccache \
     --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=.git,target=.git  \
     cd aphrodite_kernels && \
     # Clean any existing CMake artifacts
     rm -rf .deps && \
@@ -247,8 +246,7 @@ RUN CUDA_MAJOR_MINOR=$(echo $CUDA_VERSION | cut -d. -f1,2 | tr -d '.') && \
 
 COPY . .
 ARG GIT_REPO_CHECK=0
-RUN --mount=type=bind,source=.git,target=.git \
-    if [ "$GIT_REPO_CHECK" != "0" ]; then bash tools/check_repo.sh ; fi
+RUN if [ "$GIT_REPO_CHECK" != "0" ]; then bash tools/check_repo.sh ; fi
 
 # max jobs used by Ninja to build extensions
 ARG max_jobs=2
@@ -260,7 +258,6 @@ ENV NVCC_THREADS=$nvcc_threads
 ENV CCACHE_DIR=/root/.cache/ccache
 RUN --mount=type=cache,target=/root/.cache/ccache \
     --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=.git,target=.git  \
         # Clean any existing CMake artifacts and dist directory
         # Also remove any kernels wheels that might have been copied
     rm -rf .deps dist *.egg-info aphrodite_kernels/dist && \
