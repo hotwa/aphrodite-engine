@@ -379,7 +379,7 @@ class DeepseekV2Attention(nn.Module):
 
         if rope_scaling:
             mscale_all_dim = rope_scaling.get("mscale_all_dim", False)
-            scaling_factor = rope_scaling["factor"]
+            scaling_factor = rope_scaling.get("factor", 1.0)
             mscale = yarn_get_mscale(scaling_factor, float(mscale_all_dim))
             self.scaling = self.scaling * mscale * mscale
 
@@ -851,7 +851,7 @@ class DeepseekV2MLAAttention(nn.Module):
         )
         if rope_scaling:
             mscale_all_dim = rope_scaling.get("mscale_all_dim", False)
-            scaling_factor = rope_scaling["factor"]
+            scaling_factor = rope_scaling.get("factor", 1.0)
             mscale = yarn_get_mscale(scaling_factor, float(mscale_all_dim))
             self.scaling = self.scaling * mscale * mscale
 

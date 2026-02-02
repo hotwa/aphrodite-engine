@@ -263,6 +263,7 @@ RUN --mount=type=cache,target=/root/.cache/ccache \
     rm -rf .deps dist *.egg-info aphrodite_kernels/dist && \
         mkdir -p .deps dist && \
         export APHRODITE_DOCKER_BUILD_CONTEXT=1 && \
+        export APHRODITE_VERSION_OVERRIDE=0.0.0 && \
         # Temporarily rename pyproject.toml to prevent setuptools-scm from interfering
         # when building with setup.py bdist_wheel. Also ensure no cached metadata.
         mv pyproject.toml pyproject.toml.bak 2>/dev/null || true && \
@@ -406,8 +407,14 @@ RUN --mount=type=bind,from=build-kernels,src=/workspace/aphrodite_kernels/dist,t
     fi && \
     # TODO: remove apache-tvm-ffi once FlashInfer is fixed https://github.com/flashinfer-ai/flashinfer/issues/1962
     uv pip install --system --pre apache-tvm-ffi==0.1.0b15 \
-    && uv pip install --system dist/*.whl --verbose \
-        --extra-index-url ${PYTORCH_CUDA_INDEX_BASE_URL}/cu$(echo $CUDA_VERSION | cut -d. -f1,2 | tr -d '.')
+    && if [ -n "$(ls -A /aphrodite-workspace/dist/*.whl 2>/dev/null)" ]; then \
+        uv pip install --system /aphrodite-workspace/dist/*.whl --verbose \
+            --extra-index-url ${PYTORCH_CUDA_INDEX_BASE_URL}/cu$(echo $CUDA_VERSION | cut -d. -f1,2 | tr -d '.'); \
+    else \
+        echo "No aphrodite wheel found in /aphrodite-workspace/dist" >&2; \
+        ls -la /aphrodite-workspace/dist || true; \
+        exit 1; \
+    fi
 
 # Install FlashInfer pre-compiled kernel cache and binaries
 # https://docs.flashinfer.ai/installation.html

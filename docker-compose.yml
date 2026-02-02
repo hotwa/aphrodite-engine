@@ -13,7 +13,7 @@ services:
 
     # 构建出的镜像名称
     image: aphrodite-engine:latest
-    container_name: aphrodite-glm47flash
+    container_name: aphrodite-qwen25-vl7b
     restart: unless-stopped
 
     # 共享内存配置
@@ -28,6 +28,7 @@ services:
       NVIDIA_VISIBLE_DEVICES: "0,1"
       HF_HOME: "/root/.cache/huggingface"
       HUGGINGFACE_HUB_TOKEN: "${HUGGINGFACE_HUB_TOKEN}"
+      APHRODITE_MLA_DISABLE: "1"
 
     volumes:
       - ${HOME}/.cache/huggingface:/root/.cache/huggingface
@@ -42,10 +43,11 @@ services:
 
     command:
       [
-        "cyankiwi/GLM-4.7-Flash-AWQ-4bit",
+        "Qwen/Qwen2.5-VL-7B-Instruct",
         "--host", "0.0.0.0",
         "--port", "2242",
         "--tensor-parallel-size", "2",
         "--max-model-len", "8192",
-        "--quantization", "compressed-tensors"
+        "--trust-remote-code",
+        "--gpu-memory-utilization", "0.40"
       ]
